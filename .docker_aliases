@@ -1,21 +1,30 @@
 function docker_container {
-  name="${1?needs one argument}"
-  containerId=$(docker ps | grep $name | awk '{print $1}')
-  if [[ -n "$containerId" ]]; then
+  local name="${1?needs one argument}"
+  local containerId=$(docker ps | grep $name | awk '{print $1}')
+
+  if [[ -n "$containerId" ]]
+  then
     echo $containerId
-  else
-    echo "No docker container with name: $name is running"
   fi
 }
 
 function docker_exec {
   containerId=$(docker_container $1)
-  docker exec -it $containerId bash
+  if [[ -n $containerId ]]; then
+    docker exec -it $containerId bash
+  else
+    echo "No docker container with name: $name is running"
+  fi
 }
 
 function docker_logs {
   containerId=$(docker_container $1)
-  docker logs -f $containerId
+
+  if [[ -n $containerId ]]; then
+    docker logs -f $containerId
+  else
+    echo "No docker container with name: $name is running"
+  fi
 }
 
 alias dklf='docker_logs $1'
